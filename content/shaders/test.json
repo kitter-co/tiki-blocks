@@ -1,0 +1,9 @@
+{
+  "attributes": {
+    "a_pos": {
+      "size": 2,
+      "type": "FLOAT"
+    }
+  },
+  "uniforms": ["u_red"]
+}

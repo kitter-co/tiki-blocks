@@ -1,0 +1,15 @@
+{
+  "attributes":{
+    "a_data": {
+      "size": 1,
+      "type": "INT",
+      "int": true
+    },
+    "a_corner": {
+      "size": 1,
+      "type": "BYTE",
+      "int": true
+    }
+  },
+  "uniforms": ["u_projectionMat", "u_viewMat", "u_offset", "u_tex"]
+}

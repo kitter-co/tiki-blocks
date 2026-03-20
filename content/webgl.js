@@ -1,9 +1,14 @@
-const shaderNames = ["test"]
+const shaderNames = ["test", "block"]
 const imagePaths = {
   blocks: ["stone_bricks"]
 }
 
 const canvas = document.querySelector("canvas"), gl = canvas.getContext("webgl2")
+
+// SIZING
+
+const NEAR = 0.1, FAR = null, FOV = 70
+const projectionMat = mat4.create()
 
 let width, height
 
@@ -12,6 +17,8 @@ function resizeCanvas() {
   height = canvas.height = innerHeight * devicePixelRatio
 
   gl.viewport(0, 0, width, height)
+
+  mat4.perspective(projectionMat, FOV, width / height, NEAR, FAR)
 }
 
 resizeCanvas()
@@ -19,7 +26,7 @@ onresize = resizeCanvas
 
 // SHADERS
 
-const SHADER_PREFIX = "#version 300 es\nprecision highp float;\n\n"
+const SHADER_PREFIX = "#version 300 es\nprecision highp float;\nprecision highp int;\n\n"
 
 async function loadShaderProgram(name) {
   let [vs, fs, { attributes, uniforms }] = await Promise.all([
@@ -67,14 +74,18 @@ async function loadShaderProgram(name) {
   program.buffer = {}
 
   for (let name in attributes) {
-    let { size, type } = attributes[name]
+    let { size, type, int } = attributes[name]
 
     let attrib = program.attrib[name] = gl.getAttribLocation(program, name)
     let buffer = program.buffer[name] = gl.createBuffer()
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
     gl.enableVertexAttribArray(attrib)
-    gl.vertexAttribPointer(attrib, size, gl[type], false, 0, 0)
+    if (int) {
+      gl.vertexAttribIPointer(attrib, size, gl[type], 0, 0)
+    } else {
+      gl.vertexAttribPointer(attrib, size, gl[type], false, 0, 0)
+    }
   }
 
   for (let name of uniforms) {
@@ -140,6 +151,30 @@ function useTexture(uniform, texture, index, type = gl.TEXTURE_2D) {
 
 const textures = loadTexturesFromObj(imagePaths)
 
+/*
+TODO use texture array for multiple textures
+
+function createTexture(width, height, depth) {
+  let texture = gl.createTexture()
+
+  gl.activeTexture(gl.TEXTURE0)
+  gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture)
+
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.REPEAT)
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.REPEAT)
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR)
+
+  gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, width, height, depth, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+
+  return texture
+}
+
+function textureLoaded(data, z) {
+  gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, z, data.width, data.height, 1, gl.RGBA, gl.UNSIGNED_BYTE, data)
+}
+*/
+
 // DRAWING
 
 gl.clearColor(0, 0, 0, 1)
@@ -157,3 +192,7 @@ function blend(enable) {
     gl.disable(gl.BLEND)
   }
 }
+
+gl.enable(gl.DEPTH_TEST)
+
+// gl.enable(gl.CULL_FACE)

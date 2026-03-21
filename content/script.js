@@ -9,6 +9,7 @@ let keysDown = {}
 onkeydown = e => {
   if (!e.metaKey) keysDown[e.code] = "press"
 }
+
 onkeyup = e => {
   keysDown[e.code] = false
 }

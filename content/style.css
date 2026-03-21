@@ -1,7 +1,44 @@
+:root {
+  --ui-px: 6px;
+}
+
+button, ui-div {
+  --border-size: var(--ui-px);
+  border: var(--border-size) solid transparent;
+
+  border-image-source: url("./assets/ui/gray.png");
+  border-image-slice: 1 fill;
+  border-image-width: var(--border-size);
+  border-image-repeat: stretch;
+}
+
+button {
+  height: calc(var(--ui-px) * 6);
+  width: round(30%, var(--ui-px));
+  min-width: max-content;
+  white-space: nowrap;
+  padding: 0 var(--ui-px);
+  line-height: 0;
+}
+
+button:is(:hover, :focus-visible) {
+  border-image-source: url("./assets/ui/hover.png");
+}
+
+button:active {
+  border-image-source: url("./assets/ui/active.png");
+}
+
+@font-face {
+  font-family: pixel;
+  src: url("./assets/ui/font/tiki_blocks.ttf");
+}
+
 html, body {
   height: 100%;
   overflow: hidden;
   background: black;
+  font-family: pixel, monospace;
 }
 
 * {
@@ -28,7 +65,6 @@ canvas {
   pointer-events: none;
   color: white;
   text-shadow: 0 1px #0004;
-  font-family: Menlo, monospace;
   font-size: 12px;
   line-height: 1.8;
 }
@@ -43,21 +79,25 @@ canvas {
 }
 
 ui-div {
-  --border-size: 8px;
 
   position: absolute;
-
-  border: var(--border-size) solid transparent;
-
-  border-image-source: url("./assets/ui/gray.png");
-  border-image-slice: 1 fill;
-  border-image-width: var(--border-size);
-  border-image-repeat: stretch;
 }
 
 #hotbar {
-  bottom: 10px;
-  left: 100px;
-  right: 100px;
-  height: 50px;
+  bottom: var(--ui-px);
+  left: 50%;
+  transform: translateX(-50%);
+  height: calc(var(--ui-px) * 5);
+  width: calc(var(--ui-px) * 50);
+}
+
+#pause-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ui-px) * 2);
+  justify-content: center;
+  align-items: center;
 }

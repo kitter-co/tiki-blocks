@@ -3,7 +3,7 @@ const { mat4, glMatrix } = window.glMatrix
 const debugElem = document.getElementById("debug")
 let showDebug = false
 
-let camera = { x: -0.5, y: 15, z: 4, yaw: glMatrix.toRadian(30), pitch: glMatrix.toRadian(30) }
+let camera = { x: -4, y: 40, z: 27, yaw: glMatrix.toRadian(325), pitch: glMatrix.toRadian(25) }
 
 let keysDown = {}
 onkeydown = e => {
@@ -14,7 +14,7 @@ onkeyup = e => {
 }
 
 function processKeys() {
-  const MOVE_SPEED = 0.1, LOOK_SPEED = 0.03
+  const MOVE_SPEED = 1, LOOK_SPEED = 0.03
 
   if (keysDown.ArrowDown) camera.pitch += LOOK_SPEED
   if (keysDown.ArrowUp) camera.pitch -= LOOK_SPEED
@@ -56,8 +56,6 @@ function setup() {
   gl.bindBuffer(gl.ARRAY_BUFFER, programs.block.buffer.a_corner)
   gl.bufferData(gl.ARRAY_BUFFER, new Int8Array([0, 1, 3, 2]), gl.STATIC_DRAW)
   gl.vertexAttribDivisor(programs.block.attrib.a_data, 1)
-
-  loadChunksAround(0, 0, 5)
 }
 
 const viewMat = mat4.create()
@@ -69,6 +67,9 @@ function draw() {
       `Yaw: ${glMatrix.toDegree(camera.yaw).toFixed(1)}, Pitch: ${glMatrix.toDegree(camera.pitch).toFixed(1)}`
     ].join("\n")
   }
+
+  loadedChunks.clear()
+  loadChunksAround(camera.x, camera.z, renderDistance)
 
   clearCanvas()
 

@@ -63,7 +63,7 @@ function generateChunk(chunkX, chunkZ) {
       let worldZ = z + chunkZ * CHUNK_SIZE
 
       let layerIndex = x + z * CHUNK_SIZE
-      let height = Math.sin(worldX * worldZ * 0.01) * 10 + 10
+      let height = Math.round(getHeight(worldX, worldZ))
       heightmap[layerIndex] = height
 
       for (let y = 0; y < height; y++) {
@@ -73,6 +73,10 @@ function generateChunk(chunkX, chunkZ) {
   }
 
   return { data, heightmap }
+}
+
+function getHeight(x, z) {
+  return (Math.sin(x / 50) + Math.sin(z / 50)) * 15 + (Math.sin(x / 10) + Math.sin(z / 10)) * 4 + 20
 }
 
 function isTransparent(id) {

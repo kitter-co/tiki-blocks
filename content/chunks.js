@@ -7,6 +7,9 @@ let workers = Array.from({ length: 4 }, () => {
 })
 
 function loadChunksAround(centerX, centerZ, renderDist) {
+  let chunkX = Math.floor(centerX / CHUNK_SIZE)
+  let chunkZ = Math.floor(centerZ / CHUNK_SIZE)
+
   let toLoad = []
 
   for (let x = -renderDist; x <= renderDist; x++) {
@@ -22,7 +25,7 @@ function loadChunksAround(centerX, centerZ, renderDist) {
   toLoad.sort((a, b) => a.dist - b.dist)
 
   for (let { x, z } of toLoad) {
-    loadChunk(x, z)
+    loadChunk(x + chunkX, z + chunkZ)
   }
 }
 

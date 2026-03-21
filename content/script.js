@@ -55,10 +55,4 @@ function itemLoaded() {
 function waitForLoad(promise) {
   itemsToLoad++
   promise.then(itemLoaded)
-
-  promise.then(() => {
-    if (++itemsLoaded == itemsToLoad) {
-      loaded()
-    }
-  })
 }

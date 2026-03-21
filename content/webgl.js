@@ -1,7 +1,4 @@
 const shaderNames = ["test", "block"]
-const imagePaths = {
-  blocks: ["stone_bricks", "dirt", "rocky_dirt", "grass_top"]
-}
 
 const canvas = document.querySelector("canvas"), gl = canvas.getContext("webgl2")
 
@@ -118,6 +115,8 @@ function loadImage(path) {
   })
 }
 
+/*
+TODO bring back normal texture loading for non-block textures
 async function loadTexture(path) {
   let img = await loadImage(path)
   let texture = gl.createTexture()
@@ -151,37 +150,37 @@ function loadTexturesFromObj(obj, path = "") {
   return textures
 }
 
+const textures = loadTexturesFromObj(imagePaths)
+*/
+
+function createTexture(width, height, depth = null, data = null) {
+  let array = depth !== null
+  let type = array ? gl.TEXTURE_2D_ARRAY : gl.TEXTURE_2D
+
+  let texture = gl.createTexture()
+
+  gl.activeTexture(gl.TEXTURE0)
+  gl.bindTexture(type, texture)
+
+  gl.texParameteri(type, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(type, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(type, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(type, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+
+  if (array) {
+    gl.texImage3D(type, 0, gl.RGBA, width, height, depth, 0, gl.RGBA, gl.UNSIGNED_BYTE, data)
+  } else {
+    gl.texImage2D(type, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, data)
+  }
+
+  return texture
+}
+
 function useTexture(uniform, texture, index, type = gl.TEXTURE_2D) {
   gl.activeTexture(gl.TEXTURE0 + index)
   gl.bindTexture(type, texture)
   gl.uniform1i(uniform, index)
 }
-
-const textures = loadTexturesFromObj(imagePaths)
-
-/*
-TODO use texture array for multiple textures
-
-function createTexture(width, height, depth) {
-  let texture = gl.createTexture()
-
-  gl.activeTexture(gl.TEXTURE0)
-  gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture)
-
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.REPEAT)
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.REPEAT)
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR)
-
-  gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, width, height, depth, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
-
-  return texture
-}
-
-function textureLoaded(data, z) {
-  gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, z, data.width, data.height, 1, gl.RGBA, gl.UNSIGNED_BYTE, data)
-}
-*/
 
 // DRAWING
 

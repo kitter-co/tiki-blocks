@@ -25,9 +25,19 @@ function getChunkAt(x, z) {
 }
 
 let workers = Array.from({ length: 4 }, () => {
+  let { promise, resolve } = Promise.withResolvers()
+
   let worker = new Worker("./generation/main.js")
-  worker.onmessage = receiveMessage
-  return { worker, tasks: 0 }
+  let workerData = { worker, tasks: 0, loadingPromise: promise }
+
+  worker.postMessage({ type: "setup", data: { blockTextureIndices } })
+  worker.onmessage = () => {
+    resolve()
+    workerData.loadingPromise = null
+    worker.onmessage = receiveMessage
+  }
+
+  return workerData
 })
 
 function loadChunksAround(centerX, centerZ, renderDist) {
@@ -75,14 +85,16 @@ async function loadChunk(x, z) {
 
 let messageReceivedCallbacks = new Map(), messageReceivedCallbackId = 0
 
-function queueGenerateTask(x, z) {
+async function queueGenerateTask(x, z) {
   let id = messageReceivedCallbackId++
 
   let worker = workers.sort((a, b) => a.tasks - b.tasks)[0]
   worker.tasks++
 
+  if (worker.loadingPromise) await worker.loadingPromise
+
   return new Promise(resolve => {
-    worker.worker.postMessage({ id, data: { x, z } })
+    worker.worker.postMessage({ id, type: "generate", data: { x, z } })
 
     messageReceivedCallbacks.set(id, chunk => {
       worker.tasks--

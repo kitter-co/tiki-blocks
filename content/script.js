@@ -83,7 +83,7 @@ function draw() {
 
   useProgram(programs.block)
 
-  useTexture(programs.block.uniform.u_tex, textures.blocks.grass_top, 0)
+  useTexture(programs.block.uniform.u_tex, blockTexture, 0, gl.TEXTURE_2D_ARRAY)
 
   mat4.fromXRotation(viewMat, camera.pitch)
   mat4.rotateY(viewMat, viewMat, camera.yaw)

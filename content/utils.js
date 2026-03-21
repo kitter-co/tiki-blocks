@@ -1,4 +1,4 @@
-let renderDistance = 8
+let renderDistance = 12
 
 // cannot be bigger than 32, 256 or many things will die
 const CHUNK_SIZE = 32, CHUNK_HEIGHT = 256

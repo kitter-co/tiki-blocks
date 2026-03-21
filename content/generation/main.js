@@ -1,11 +1,20 @@
 importScripts("../utils.js", "./chunk.js")
 
-onmessage = ({ data: { id, data } }) => {
-  let chunk = generateChunk(data.x, data.z)
-  chunk.faces = computeFaces(chunk)
+let blockTextureIndices
 
-  postMessage(
-    { id, data: chunk },
-    { transfer: [chunk.faces.data.buffer] }
-  )
+onmessage = ({ data: { id, type, data } }) => {
+  if (type === "setup") {
+    blockTextureIndices = data.blockTextureIndices
+    postMessage(null)
+  } else if (type === "generate") {
+    let chunk = generateChunk(data.x, data.z)
+    chunk.faces = computeFaces(chunk)
+
+    postMessage(
+      { id, data: chunk },
+      { transfer: [chunk.faces.data.buffer] }
+    )
+  } else {
+    console.error(`Unknown message type sent to worker '${type}'`, data)
+  }
 }

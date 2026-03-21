@@ -21,26 +21,29 @@ function computeFaces({ blocks, heightmap }) {
 
         if (data.invisible) continue
 
-        let tex = blockTextureIndices[data.texture]
-        let blockData = blockDataXZ | y | tex << 24
+        let texSide = blockTextureIndices[data.texture]
+        let blockData = blockDataXZ | y
+        let blockDataSide = blockData | texSide << 24
 
         if (y === height - 1 || isTransparent(blocks[i + CHUNK_LAYER_LEN])) {
-          py.push(blockData)
+          let texTop = blockTextureIndices[data.textureTop] ?? texSide
+          py.push(blockData | texTop << 24)
         }
         if (y > 0 && isTransparent(blocks[i - CHUNK_LAYER_LEN])) {
-          ny.push(blockData | 1 << 18)
+          let texBottom = blockTextureIndices[data.textureBottom] ?? texSide
+          ny.push(blockData | texBottom << 24 | 1 << 18)
         }
         if (x < CHUNK_SIZE - 1 && isTransparent(blocks[i + 1])) {
-          px.push(blockData | 2 << 18)
+          px.push(blockDataSide | 2 << 18)
         }
         if (x > 0 && isTransparent(blocks[i - 1])) {
-          nx.push(blockData | 3 << 18)
+          nx.push(blockDataSide | 3 << 18)
         }
         if (z < CHUNK_SIZE - 1 && isTransparent(blocks[i + CHUNK_SIZE])) {
-          pz.push(blockData | 4 << 18)
+          pz.push(blockDataSide | 4 << 18)
         }
         if (z > 0 && isTransparent(blocks[i - CHUNK_SIZE])) {
-          nz.push(blockData | 5 << 18)
+          nz.push(blockDataSide | 5 << 18)
         }
       }
     }

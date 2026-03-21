@@ -13,7 +13,9 @@ const blocks = [
   {
     id: 2,
     name: "Grass",
-    texture: "grass_top"
+    texture: "grass_side",
+    textureTop: "grass_top",
+    textureBottom: "dirt"
   },
   {
     id: 3,
